@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "mongoose": "^5.10.8"
   },
   "devDependencies": {},
