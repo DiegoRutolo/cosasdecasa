@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    volumes:
+      - db_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo_user_name
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_user_passwd
+    secrets:
+      - mongo_user_name
+      - mongo_user_passwd
+
+  app:
+    depends_on:
+      - mongo
+    build: .
+    ports:
+      - "10886:10886"
+    secrets:
+      - mongo_user_name
+      - mongo_user_passwd
+
+secrets:
+  mongo_user_name:
+    file: secrets/mongo_user_name
+  mongo_user_passwd:
+    file: secrets/mongo_user_passwd
+
+volumes:
+  db_data:

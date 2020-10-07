@@ -1,0 +1,17 @@
+{
+  "name": "cosasdecasa",
+  "version": "1.0.0",
+  "description": "REST API para listas de la compra",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
