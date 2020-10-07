@@ -6,14 +6,7 @@ const PORT = 10886;
 
 // funciones para leer credenciales
 function getSecret(fileName) {
-    fs.readFile("/run/secrets/" + fileName, 'utf8', (err, data) => {
-        if (err) {
-            console.err(err);
-            return;
-        }
-
-        return data;
-    });
+    return fs.readFileSync("/run/secrets/" + fileName, 'utf8');
 }
 
 function getConnString() {
