@@ -2,6 +2,19 @@
 
 REST API para listas de la compra y otras chorradas útiles
 
+## Peticiones HTTP
+
+Descipción de todas las opciones
+
+### GET
+ + **/listas** : Devuelve todas las listas
+ + **/listas/UNAIDCUALQUIERA** : Devuelve la lista con esa ID
+ + **/listas/?listaID=UNAIDCUALQUIERA** : Devuelve la lista con esa ID (utilizando parametros)
+
+
+### POST
+Crea una lista nueva. Cuerpo en JSON (ver *Estructura Mongo*).
+
 
 ## Secretos
 
