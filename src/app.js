@@ -57,6 +57,10 @@ app.get("/listas", function(req, res) {
                 return res.status(500).json({error: err.message});
             }
 
+            if (listaResult == null) {
+                return res.status(204).json({listas: ""});
+            }
+
             return res.status(200).json({listas: listaResult});
         });
     } else {
@@ -76,12 +80,12 @@ app.get("/listas", function(req, res) {
 
      Lista.findById(req.params.listaID, function(err, listRestult) {
          if (err) {
-             console.err(err);
+             console.error(err);
              return res.status(500).json({error: err.message});
          }
 
          if (listRestult == null) {
-             return res.status(200).json({lista: ""});
+             return res.status(204).json({lista: ""});
          }
          return res.status(200).json({lista: listRestult});
      });
@@ -102,7 +106,7 @@ app.post("/listas", function(req, res) {
             console.err(err);
             return res.status(500).json({error: err.message});
         }
-        res.status(200).json({msg: "Lista guardada"});
+        res.status(201).header("Location", "/listas/"+newLista._id).json({msg: "Lista guardada"});
     });
 });
 
