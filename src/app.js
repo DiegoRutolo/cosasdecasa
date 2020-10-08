@@ -46,18 +46,46 @@ app.listen(PORT, () => console.log("Server iniciado"));
 // Importar el esquema de Lista
 const Lista = require("./models/Lista");
 
-// Funcion para manejar GET
+// Funciones GET
 app.get("/listas", function(req, res) {
-    // console.log("Recibido GET");
+    console.log("Recibido GET");
 
-    Lista.find(function(err, listas) {
-        if (err) {
-            return res.status(500).json({error: err.message});
-        }
+    // Comprobamos si hay parametros get
+    if (req.query.listaID != null) {
+        Lista.findById(req.query.listaID, function(err, listaResult) {
+            if (err) {
+                return res.status(500).json({error: err.message});
+            }
 
-        res.status(200).json({listas: listas})
-    });
+            return res.status(200).json({listas: listaResult});
+        });
+    } else {
+        Lista.find(function(err, listas) {
+            if (err) {
+                return res.status(500).json({error: err.message});
+            }
+
+            return res.status(200).json({listas: listas});
+        });
+    }
 });
+
+// Funcion GET por id
+ app.get("/listas/:listaID", function(req, res) {
+     console.log("Redibido GET by ID");
+
+     Lista.findById(req.params.listaID, function(err, listRestult) {
+         if (err) {
+             console.err(err);
+             return res.status(500).json({error: err.message});
+         }
+
+         if (listRestult == null) {
+             return res.status(200).json({lista: ""});
+         }
+         return res.status(200).json({lista: listRestult});
+     });
+ });
 
 // Funcion POST
 app.post("/listas", function(req, res) {
@@ -77,3 +105,4 @@ app.post("/listas", function(req, res) {
         res.status(200).json({msg: "Lista guardada"});
     });
 });
+
