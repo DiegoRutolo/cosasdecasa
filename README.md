@@ -21,6 +21,11 @@ Actualizar listas
  + **/listas/UNAIDCUALQUIERA** : Actualiza el nombre y la descripción. Los datos van en el cuerpo, como en POST.
  + **/listas/UNAIDCUALQUIERA/items** : Añade un item nuevo. Los datos van en el cuerpo de la petición en formato JSON (ver *Estructura Mongo*).
  
+### DELETE
+
+Elimina el elemento indicado
+ + **/listas/UNAIDCUALQUIERA** : Elimina la lista entera
+ + **/listas/UNAIDCUALQUIERA/IDITEM** : Elimina el item de la lista
 ## Secretos
 
 La carpeta secrets contiene archivos de texto con las credenciales de la base de datos.

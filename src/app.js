@@ -162,3 +162,34 @@ app.put("/listas/:listaID/items", function(req, res) {
         });
     });
 });
+
+// Funcion DELETE
+app.delete("/listas/:listaID", function(req, res) {
+    console.log("Redibido DELETE");
+
+    Lista.findByIdAndDelete(req.params.listaID, function(err, result) {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({error: err.message});
+        }
+
+        res.status(200).json({msg: "Lista eliminada"});
+    });
+});
+
+// Funcion DELETE item
+app.delete("/listas/:listaID/:itemID", function(req, res) {
+    console.log("Redibido DELETE item");
+
+    Lista.updateOne(
+        {_id: req.params.listaID},
+        {$pull: {items: {_id: req.params.itemID}}},
+        function(err, raw) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({error: err.message});
+            }
+    
+            res.status(200).json({msg: "Elemento eliminado"});
+        });
+});
