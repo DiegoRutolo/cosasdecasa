@@ -19,10 +19,8 @@ Crea una lista nueva. Cuerpo en JSON (ver *Estructura Mongo*). Devuelve 201 y un
 Actualizar listas
 
  + **/listas/UNAIDCUALQUIERA** : Actualiza el nombre y la descripción. Los datos van en el cuerpo, como en POST.
- + **/listas/UNAIDCUALQUIERA/items?op=N** : Actualizar los elementos de la lista. Se utiliza un número como parámetro para indicar la operación y los datos van en el cuerpo de la petición en formato JSON. Devuelve 200.
-    + **/listas/UNAIDCUALQUIERA/items?op=0** : Añadir elemento
-    + **/listas/UNAIDCUALQUIERA/items?op=1** : Borrar elemento
-
+ + **/listas/UNAIDCUALQUIERA/items** : Añade un item nuevo. Los datos van en el cuerpo de la petición en formato JSON (ver *Estructura Mongo*).
+ 
 ## Secretos
 
 La carpeta secrets contiene archivos de texto con las credenciales de la base de datos.

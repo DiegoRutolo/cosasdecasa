@@ -142,15 +142,23 @@ app.put("/listas/:listaID", function(req, res) {
 });
 
 // Funcion PUT para items
-/* app.put("/listas/:listaID/items", function(req, res) {
+app.put("/listas/:listaID/items", function(req, res) {
     console.log("Recibido PUT item");
 
-    if (req.query.op == 0) {
+    Lista.findById(req.params.listaID, function(err, result) {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({error: err.message});
+        }
 
-    } else if (req.query.op == 1) {
+        result.items.push(req.body);
+        result.save(function(err2, prod) {
+            if (err2) {
+                console.error(err2);
+                return res.status(500).json({error: err2.message});
+            }
 
-    } else {
-        return res.status(400)
-            .json({msg: "Falta parámetro 'op'"});
-    }
-}); */
+            res.status(200).json({msg: "Añadido elemento"});
+        });
+    });
+});
