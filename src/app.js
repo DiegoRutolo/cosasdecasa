@@ -32,6 +32,7 @@ mongoose
     .connect(getConnString(), {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useFindAndModify: false,
         auth: {authSource: "admin"},
         user: getSecret("mongo_user_name"),
         pass: getSecret("mongo_user_passwd")
@@ -50,7 +51,7 @@ const Lista = require("./models/Lista");
 app.get("/listas", function(req, res) {
     console.log("Recibido GET");
 
-    // Comprobamos si hay parametros get
+    // Comprobamos si hay parametros get para filtrar
     if (req.query.listaID != null) {
         Lista.findById(req.query.listaID, function(err, listaResult) {
             if (err) {
@@ -63,7 +64,7 @@ app.get("/listas", function(req, res) {
 
             return res.status(200).json({listas: listaResult});
         });
-    } else {
+    } else {    // O devolvemos todos los elementos
         Lista.find(function(err, listas) {
             if (err) {
                 return res.status(500).json({error: err.message});
@@ -106,7 +107,50 @@ app.post("/listas", function(req, res) {
             console.err(err);
             return res.status(500).json({error: err.message});
         }
-        res.status(201).header("Location", "/listas/"+newLista._id).json({msg: "Lista guardada"});
+        res.status(201)
+            .header("Location", "/listas/"+newLista._id)
+            .json({msg: "Lista guardada"});
     });
 });
 
+// Funcion PUT
+app.put("/listas/:listaID", function(req, res) {
+    console.log("Redibico PUT");
+
+    Lista.findById(req.params.listaID, function(err, lista) {
+        if (err) {
+            return res.status(500)
+                .json({error: err.message});
+        }
+
+        if (req.body.nombre != null) {
+            lista.nombre = req.body.nombre;
+        }
+        if (req.body.descr != null) {
+            lista.descr = req.body.descr;
+        }
+
+        lista.save(function(err, prod) {
+            if (err) {
+                return res.status(500)
+                    .json({error: err.message});
+            }
+
+            res.status(200).json({msg: "Lista actualizada"});
+        });
+    });
+});
+
+// Funcion PUT para items
+/* app.put("/listas/:listaID/items", function(req, res) {
+    console.log("Recibido PUT item");
+
+    if (req.query.op == 0) {
+
+    } else if (req.query.op == 1) {
+
+    } else {
+        return res.status(400)
+            .json({msg: "Falta parámetro 'op'"});
+    }
+}); */
