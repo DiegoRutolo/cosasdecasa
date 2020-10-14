@@ -43,10 +43,10 @@ mongoose
 // Iniciar el server
 app.listen(PORT, () => console.log("Server iniciado"));
 
-//#region Lista
 // Importar el esquema de Lista
 const Lista = require("./models/Lista");
 
+//#region Lista
 // Funciones GET
 app.get("/listas", function(req, res) {
     console.log("Recibido GET");
@@ -86,6 +86,10 @@ app.post("/listas", function(req, res) {
         descr: req.body.descr,
         items: req.body.items
     });
+
+    if (lista.nombre == null) {
+        return res.status(400).json({msg: "Falta el nombre"});
+    }
 
     lista.save(function(err, newLista) {
         if (err) {
