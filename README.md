@@ -8,8 +8,7 @@ Descipción de todas las opciones
 
 ### GET
  + **/listas** : Devuelve todas las listas
- + **/listas/UNAIDCUALQUIERA** : Devuelve la lista con esa ID
- + **/listas/?listaID=UNAIDCUALQUIERA** : Devuelve la lista con esa ID (utilizando parametros)
+ + **/listas/{UNAIDCUALQUIERA}** : Devuelve la lista con esa ID
 
 
 ### POST

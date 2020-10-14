@@ -43,7 +43,7 @@ mongoose
 // Iniciar el server
 app.listen(PORT, () => console.log("Server iniciado"));
 
-
+//#region Lista
 // Importar el esquema de Lista
 const Lista = require("./models/Lista");
 
@@ -51,28 +51,13 @@ const Lista = require("./models/Lista");
 app.get("/listas", function(req, res) {
     console.log("Recibido GET");
 
-    // Comprobamos si hay parametros get para filtrar
-    if (req.query.listaID != null) {
-        Lista.findById(req.query.listaID, function(err, listaResult) {
-            if (err) {
-                return res.status(500).json({error: err.message});
-            }
+    Lista.find(function(err, listas) {
+        if (err) {
+            return res.status(500).json({error: err.message});
+        }
 
-            if (listaResult == null) {
-                return res.status(204).json({listas: ""});
-            }
-
-            return res.status(200).json({listas: listaResult});
-        });
-    } else {    // O devolvemos todos los elementos
-        Lista.find(function(err, listas) {
-            if (err) {
-                return res.status(500).json({error: err.message});
-            }
-
-            return res.status(200).json({listas: listas});
-        });
-    }
+        return res.status(200).json({listas: listas});
+    });
 });
 
 // Funcion GET por id
@@ -193,3 +178,7 @@ app.delete("/listas/:listaID/:itemID", function(req, res) {
             res.status(200).json({msg: "Elemento eliminado"});
         });
 });
+//#endregion
+
+//#region Usuarios
+//#endregion
