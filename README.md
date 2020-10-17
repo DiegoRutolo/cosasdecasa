@@ -35,19 +35,44 @@ Un archivo por secreto, en texto plano, sin espacios ni lineas extra. Estos son 
 
 ## Estructura Mongo
 
+ + Usuario > crea casa
+
 **Lista**
 ```
 {
     nombre: "Compra",
     descr: "Comida para comprar"
-    items: {[
+    items: [
         {
             nom: "Salsa de tomate",
             descr: "Solis"
-        }, {
+        },
+        {
             nom: "Sal",
             descr: "Gorda"
         }
-    ]}
+    ]
+}
+```
+
+
+**Usuario**
+```
+{
+    username: "Pedrito",
+    passwd: "abc123.",
+    casas_acceso: [
+        "4fdg5",
+        "8kfj34"
+    ]
+}
+```
+
+**Casa**
+```
+{
+    nombre: "Rosalia 3",
+    descr: "Una casa grande",
+    admin_id: "IDUSUARIO"
 }
 ```

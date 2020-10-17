@@ -186,3 +186,6 @@ app.delete("/listas/:listaID/:itemID", function(req, res) {
 
 //#region Usuarios
 //#endregion
+
+//#region Casas
+//#endregion
