@@ -1,26 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const fs = require("fs");
+const u = require('./utils');
 
 const PORT = 10886;
-
-// funciones para leer credenciales
-function getSecret(fileName) {
-    return fs.readFileSync("/run/secrets/" + fileName, 'utf8');
-}
-
-function getConnString() {
-    var cs = "mongodb://";
-    cs += getSecret("mongo_user_name");
-    cs += ":";
-    cs += getSecret("mongo_user_passwd");
-    cs += "@mongo:27017/cosasdecasa";
-
-    cs = "mongodb://mongo:27017/cosasdecasa"
-
-    // console.log(cs);
-    return cs;
-}
 
 // Instancia de server
 const app = express();
@@ -29,163 +12,126 @@ app.use(express.json());
 
 // Conectar a MongoDB
 mongoose
-    .connect(getConnString(), {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-        auth: {authSource: "admin"},
-        user: getSecret("mongo_user_name"),
-        pass: getSecret("mongo_user_passwd")
-    })
-    .then(() => console.log("Conectado a MongoDB"))
-    .catch((err) => console.log(err));
+.connect(u.getConnString(), {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    auth: {authSource: "admin"},
+    user: u.getSecret("mongo_user_name"),
+    pass: u.getSecret("mongo_user_passwd")
+})
+.then(() => console.log("Conectado a MongoDB"))
+.catch((err) => console.log(err));
 
 // Iniciar el server
 app.listen(PORT, () => console.log("Server iniciado"));
 
-// Importar el esquema de Lista
-const Lista = require("./models/Lista");
+// Importar esquemas
+const Lista = require('./models/Lista');
+const Casa = require('./models/Casa');
+const { DH_CHECK_P_NOT_SAFE_PRIME } = require("constants");
 
-//#region Lista
-// Funciones GET
-app.get("/listas", function(req, res) {
-    console.log("Recibido GET");
+//#region Casas
+// Crear Casas
+app.post("/casa", function(req, res) {
+    const casa = new Casa(req.body);
 
-    Lista.find(function(err, listas) {
-        if (err) {
-            return res.status(500).json({error: err.message});
-        }
-
-        return res.status(200).json({listas: listas});
-    });
-});
-
-// Funcion GET por id
- app.get("/listas/:listaID", function(req, res) {
-     console.log("Redibido GET by ID");
-
-     Lista.findById(req.params.listaID, function(err, listRestult) {
-         if (err) {
-             console.error(err);
-             return res.status(500).json({error: err.message});
-         }
-
-         if (listRestult == null) {
-             return res.status(204).json({lista: ""});
-         }
-         return res.status(200).json({lista: listRestult});
-     });
- });
-
-// Funcion POST
-app.post("/listas", function(req, res) {
-    // console.log("Recibido POST");
-
-    const lista = new Lista({
-        nombre: req.body.nombre,
-        descr: req.body.descr,
-        items: req.body.items
-    });
-
-    if (lista.nombre == null) {
+    if (!casa.nombre) {
         return res.status(400).json({msg: "Falta el nombre"});
     }
 
-    lista.save(function(err, newLista) {
+    casa.save(function(err, newCasa) {
         if (err) {
-            console.err(err);
+            console.error(err);
             return res.status(500).json({error: err.message});
         }
+
         res.status(201)
-            .header("Location", "/listas/"+newLista._id)
-            .json({msg: "Lista guardada"});
+            .header("Location", "/casa/"+newCasa._id)
+            .json({msg: "Casa creada"});
     });
 });
 
-// Funcion PUT
-app.put("/listas/:listaID", function(req, res) {
-    console.log("Redibico PUT");
-
-    Lista.findById(req.params.listaID, function(err, lista) {
+// Ver datos de la casa
+app.get("/casa/:casaID", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, docCasa) {
         if (err) {
-            return res.status(500)
-                .json({error: err.message});
+            console.error(err);
+            return res.status(500).json({error: err.message});
         }
 
-        if (req.body.nombre != null) {
-            lista.nombre = req.body.nombre;
-        }
-        if (req.body.descr != null) {
-            lista.descr = req.body.descr;
+        if (!docCasa) {
+            return res.status(404).json({msg: "Casa not found"});
         }
 
-        lista.save(function(err, prod) {
+        return res.status(200).json({data: docCasa});
+    });
+});
+
+// Actualizar datos de la casa
+app.put("/casa/:casaID", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, docCasa) {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({error: err.message});
+        }
+
+        if (!docCasa) {
+            return res.status(404).json({msg: "Casa not found"});
+        }
+
+        if (req.body.nombre) {
+            docCasa.nombre = req.body.nombre;
+        }
+        if (req.body.descr) {
+            docCasa.descr = req.body.descr;
+        }
+
+        docCasa.save(function(err, prod) {
             if (err) {
                 return res.status(500)
                     .json({error: err.message});
             }
 
-            res.status(200).json({msg: "Lista actualizada"});
+            res.status(200).json({msg: "Casa actualizada"});
         });
     });
 });
 
-// Funcion PUT para items
-app.put("/listas/:listaID/items", function(req, res) {
-    console.log("Recibido PUT item");
-
-    Lista.findById(req.params.listaID, function(err, result) {
+app.delete("/casa/:casaID", function(req, res) {
+    Casa.findByIdAndDelete(req.params.casaID, function(err, result) {
         if (err) {
             console.error(err);
             return res.status(500).json({error: err.message});
         }
 
-        result.items.push(req.body);
-        result.save(function(err2, prod) {
-            if (err2) {
-                console.error(err2);
-                return res.status(500).json({error: err2.message});
-            }
-
-            res.status(200).json({msg: "Añadido elemento"});
-        });
+        res.status(200).json({msg: "Casa eliminada"});
     });
 });
+//#endregion
 
-// Funcion DELETE
-app.delete("/listas/:listaID", function(req, res) {
-    console.log("Redibido DELETE");
-
-    Lista.findByIdAndDelete(req.params.listaID, function(err, result) {
+//#region Lista
+// Crear lista
+app.post("/casa/:casaID/lista", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, casa) {
         if (err) {
-            console.error(err);
-            return res.status(500).json({error: err.message});
+            return res.status(404).json({msg: "Casa not found"});
         }
 
-        res.status(200).json({msg: "Lista eliminada"});
-    });
-});
-
-// Funcion DELETE item
-app.delete("/listas/:listaID/:itemID", function(req, res) {
-    console.log("Redibido DELETE item");
-
-    Lista.updateOne(
-        {_id: req.params.listaID},
-        {$pull: {items: {_id: req.params.itemID}}},
-        function(err, raw) {
+        casa.listas.push(req.body);
+        casa.save(function(err, prod) {
             if (err) {
-                console.error(err);
+                console.err(err);
                 return res.status(500).json({error: err.message});
             }
-    
-            res.status(200).json({msg: "Elemento eliminado"});
+            
+            res.status(201).json({msg: "Lista guardada"});
         });
+    });
 });
-//#endregion
 
-//#region Usuarios
-//#endregion
-
-//#region Casas
+// Añadir item a lista
+app.put("/casa/:casaID/lista/:listaID", function(req, res) {
+    
+});
 //#endregion

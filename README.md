@@ -1,41 +1,63 @@
-# Cosas de Casa
-
 REST API para listas de la compra y otras chorradas útiles
 
-## Peticiones HTTP
+# Operaciones
 
-Descipción de todas las opciones
+## Crear casa
+ > POST /casa
 
-### GET
- + **/listas** : Devuelve todas las listas
- + **/listas/{UNAIDCUALQUIERA}** : Devuelve la lista con esa ID
+El cuerpo contiene los datos de la casa en JSON. Todos son opcionales. La respuesta contiene una cabecera `Location` con la ID de la casa a través de la cual se pueden acceder a los datos
+
+## Ver datos de casa
+ > GET /casa/:casaID
+
+## Editar casa
+ > PUT /casa/:casaID
+
+El cuerpo contiene el `nombre` y `descr`. No se pueden editar otros datos para evitar borrados accidentales.
+
+## Eliminar casa
+ > DELETE /casa/:casaID
+
+## Crear lista
+ > POST /casa/:casaID/lista
+
+Los datos de la lista en el cuerpo en JSON. Puede contener items o no.
+
+## Ver lista
+ > GET /casa/:casaID
+
+## Editar datos de la lista
+ > PUT /casa/:casaID/lista/:listaID
+
+Datos en JSON en el cuerpo. Solo se puede editar `nombre` y `descr`.
+
+## Añadir elementos a la lista
+ > PUT /casa/:casaID/lista/:listaID/item
+
+Datos en el cuerpo en JSON.
+
+## Eliminar elementos de la lista
+ > DELETE /casa/:casaID/lista/:listaID/item/:itemID
 
 
-### POST
-Crea una lista nueva. Cuerpo en JSON (ver *Estructura Mongo*). Devuelve 201 y una cabecera 'Location' con la id.
-
-### PUT
-Actualizar listas
-
- + **/listas/UNAIDCUALQUIERA** : Actualiza el nombre y la descripción. Los datos van en el cuerpo, como en POST.
- + **/listas/UNAIDCUALQUIERA/items** : Añade un item nuevo. Los datos van en el cuerpo de la petición en formato JSON (ver *Estructura Mongo*).
- 
-### DELETE
-
-Elimina el elemento indicado
- + **/listas/UNAIDCUALQUIERA** : Elimina la lista entera
- + **/listas/UNAIDCUALQUIERA/IDITEM** : Elimina el item de la lista
-## Secretos
+# Secretos
 
 La carpeta secrets contiene archivos de texto con las credenciales de la base de datos.
 Un archivo por secreto, en texto plano, sin espacios ni lineas extra. Estos son los nombres utilizados:
- + mongo_user_name
- + mongo_user_passwd
+ + **mongo_user_name** : Nombre de usuario de la base de datos
+ + **mongo_user_passwd** : Contraseña del usuario de la base de datos   
+ + **salt** : Cadena aleatoria. Se puede generar con `openssl rand -hex 16 > secrets/salt` o cualquier otro método.
 
 
-## Estructura Mongo
+# Estructura Mongo
 
- + Usuario > crea casa
+ + Cualquiera puede crear una casa
+ + Cada case se configura a través de la ID, quien la conozca tiene acceso
+
+> TODO:
+> + Usuario > crea casa > autoriza otros usuarios
+> + Usuario > crea lista en casa
+
 
 **Lista**
 ```
@@ -55,6 +77,14 @@ Un archivo por secreto, en texto plano, sin espacios ni lineas extra. Estos son 
 }
 ```
 
+**Casa**
+```
+{
+    nombre: "Rosalia 3",
+    descr: "Una casa grande",
+    admin_id: "IDUSUARIO"
+}
+```
 
 **Usuario**
 ```
@@ -68,11 +98,6 @@ Un archivo por secreto, en texto plano, sin espacios ni lineas extra. Estos son 
 }
 ```
 
-**Casa**
-```
-{
-    nombre: "Rosalia 3",
-    descr: "Una casa grande",
-    admin_id: "IDUSUARIO"
-}
-```
+# Links
+
+ + http://www.passportjs.org/docs/authenticate/

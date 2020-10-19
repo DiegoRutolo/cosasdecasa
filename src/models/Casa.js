@@ -3,10 +3,14 @@ const mongoose = require("mongoose");
 const CasaSchema = new mongoose.Schema({
     nombre: String,
     descr: String,
-    admin: {
-        Type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuario'
-    }
+    listas: [{
+        nombre: String,
+        descr: String,
+        items: [{
+            nom: String,
+            descr: String
+        }]
+    }]
 });
 
-module.exports = mongoose.model("Casa", CasaSchema);
+module.exports = mongoose.model("Casa", CasaSchema, "casas");
