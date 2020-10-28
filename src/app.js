@@ -138,6 +138,7 @@ app.put("/casa/:casaID/lista/:listaID", function(req, res) {
             return res.status(404).json({msg: "Casa not found"});
         }
 
+        // Seguro que esto se puede mejorar, pero no se como
         var flag_editado = false
         for (const lista of casa.listas) {
             if (lista._id == req.params.listaID) {
@@ -164,7 +165,34 @@ app.put("/casa/:casaID/lista/:listaID", function(req, res) {
 });
 
 // Añadir item a lista
-app.put("/casa/:casaID/lista/:listaID", function(req, res) {
+app.put("/casa/:casaID/lista/:listaID/item", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, casa) {
+        if (err) {
+            return res.status(404).json({msg: "Casa not found"});
+        }
 
+        var flag_editado = false
+        for (const lista of casa.listas) {
+            if (lista._id == req.params.listaID) {
+                lista.items.push(req.body);
+
+                flag_editado = true;
+                break;
+            }
+        }
+
+        if (!flag_editado) {
+            return res.status(404).json({msg: "Lista not found"});
+        }
+        
+        casa.save(function(err, prod) {
+            if (err) {
+                console.err(err);
+                return res.status(500).json({error: err.message});
+            }
+            
+            return res.status(200).json({msg: "Lista actualizada"});
+        });
+    });
 });
 //#endregion
