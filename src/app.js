@@ -32,7 +32,7 @@ const Casa = require('./models/Casa');
 const { DH_CHECK_P_NOT_SAFE_PRIME } = require("constants");
 
 //#region Casas
-// Crear Casas
+// Crear Casa
 app.post("/casa", function(req, res) {
     const casa = new Casa(req.body);
 
@@ -98,6 +98,7 @@ app.put("/casa/:casaID", function(req, res) {
     });
 });
 
+// Eliminar casa
 app.delete("/casa/:casaID", function(req, res) {
     Casa.findByIdAndDelete(req.params.casaID, function(err, result) {
         if (err) {
@@ -130,8 +131,40 @@ app.post("/casa/:casaID/lista", function(req, res) {
     });
 });
 
+// Editar lista
+app.put("/casa/:casaID/lista/:listaID", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, casa) {
+        if (err) {
+            return res.status(404).json({msg: "Casa not found"});
+        }
+
+        var flag_editado = false
+        for (const lista of casa.listas) {
+            if (lista._id == req.params.listaID) {
+                lista.nombre = req.body.nombre ? req.body.nombre : lista.nombre;
+                lista.descr = req.body.descr ? req.body.descr : lista.descr;
+                flag_editado = true;
+                break;
+            }
+        }
+
+        if (!flag_editado) {
+            return res.status(404).json({msg: "Lista not found"});
+        }
+        
+        casa.save(function(err, prod) {
+            if (err) {
+                console.err(err);
+                return res.status(500).json({error: err.message});
+            }
+            
+            return res.status(200).json({msg: "Lista actualizada"});
+        });
+    });
+});
+
 // Añadir item a lista
 app.put("/casa/:casaID/lista/:listaID", function(req, res) {
-    
+
 });
 //#endregion
