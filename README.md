@@ -31,6 +31,9 @@ Los datos de la lista en el cuerpo en JSON. Puede contener items o no.
 
 Datos en JSON en el cuerpo. Solo se puede editar `nombre` y `descr`.
 
+## Eliminar lista
+ > DELETE /casa/:casaID/lista/:listaID
+
 ## Añadir elementos a la lista
  > PUT /casa/:casaID/lista/:listaID/item
 

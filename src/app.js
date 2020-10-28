@@ -164,6 +164,41 @@ app.put("/casa/:casaID/lista/:listaID", function(req, res) {
     });
 });
 
+// Eliminar lista
+app.delete("/casa/:casaID/lista/:listaID", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, casa) {
+        if (err) {
+            return res.status(404).json({msg: "Casa not found"});
+        }
+
+        var flag_lista = false;
+        var lista;
+        for (const l of casa.listas) {
+            if (l._id == req.params.listaID) {
+                lista = l;
+                flag_lista = true;
+                break;
+            }
+        }
+        if (!flag_lista) {
+            return res.status(404).json({msg: "Lista not found"});
+        }
+
+        casa.listas = casa.listas.filter(l => l != lista);
+
+        casa.save(function(err, prod) {
+            if (err) {
+                console.err(err);
+                return res.status(500).json({error: err.message});
+            }
+            
+            return res.status(200).json({msg: "Lista eliminada"});
+        });
+    });
+});
+//#endregion
+
+//#region Items
 // Añadir item a lista
 app.put("/casa/:casaID/lista/:listaID/item", function(req, res) {
     Casa.findById(req.params.casaID, function(err, casa) {
@@ -196,6 +231,7 @@ app.put("/casa/:casaID/lista/:listaID/item", function(req, res) {
     });
 });
 
+// Eliminar item de lista
 app.delete("/casa/:casaID/lista/:listaID/item/:itemID", function(req, res) {
     Casa.findById(req.params.casaID, function(err, casa) {
         if (err) {
