@@ -195,4 +195,52 @@ app.put("/casa/:casaID/lista/:listaID/item", function(req, res) {
         });
     });
 });
+
+app.delete("/casa/:casaID/lista/:listaID/item/:itemID", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, casa) {
+        if (err) {
+            return res.status(404).json({msg: "Casa not found"});
+        }
+        
+        var flag_lista = false
+        var flag_item = false
+        
+        var listaObj, itemObj;
+        // Encontramos la lista
+        for (const l of casa.listas) {
+            if (l._id == req.params.listaID) {
+                listaObj = l;
+                flag_lista = true;
+                break;
+            }
+        }
+        if (!flag_lista) {
+            return res.status(404).json({msg: "Lista not found"});
+        }
+
+        // encontramos el item
+        for (const i of listaObj.items) {
+            if (i._id == req.params.itemID){
+                itemObj = i;
+                flag_item = true;
+                break;
+            }
+        }
+        if (!flag_item) {
+            return res.status(404).json({msg: "Item not found"});
+        }
+
+        // encontramos el item
+        listaObj.items = listaObj.items.filter(item => item != itemObj);
+        
+        casa.save(function(err, prod) {
+            if (err) {
+                console.err(err);
+                return res.status(500).json({error: err.message});
+            }
+            
+            return res.status(200).json({msg: "Lista actualizada"});
+        });
+    });
+});
 //#endregion
