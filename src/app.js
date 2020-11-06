@@ -55,16 +55,11 @@ app.post("/casa", function(req, res) {
 // Ver datos de la casa
 app.get("/casa/:casaID", function(req, res) {
     Casa.findById(req.params.casaID, function(err, docCasa) {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({error: err.message});
-        }
-
-        if (!docCasa) {
+        if (err || !docCasa) {
             return res.status(404).json({msg: "Casa not found"});
         }
 
-        return res.status(200).json({data: docCasa});
+        return res.status(200).json(docCasa);
     });
 });
 
@@ -128,6 +123,32 @@ app.post("/casa/:casaID/lista", function(req, res) {
             
             res.status(201).json({msg: "Lista guardada"});
         });
+    });
+});
+
+// Ver lista
+app.get("/casa/:casaID/lista/:listaID", function(req, res) {
+    Casa.findById(req.params.casaID, function(err, casa) {
+        if (err) {
+            return res.status(404).json({msg: "Casa not found"});
+        }
+
+        var lista;
+        var flag_listaEncontrada = false;
+        for (const l of casa.listas) {
+            if (l._id == req.params.listaID) {
+                lista = l;
+                flag_listaEncontrada = true;
+                break;
+            }
+        }
+
+        if (!flag_listaEncontrada) {
+            return res.status(404).json({msg: "Lista not found"});
+        }
+
+        return res.status(200).json(lista);
+
     });
 });
 

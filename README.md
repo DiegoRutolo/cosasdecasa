@@ -24,7 +24,7 @@ El cuerpo contiene el `nombre` y `descr`. No se pueden editar otros datos para e
 Los datos de la lista en el cuerpo en JSON. Puede contener items o no.
 
 ## Ver lista
- > GET /casa/:casaID
+ > GET /casa/:casaID/lista/:listaID
 
 ## Editar datos de la lista
  > PUT /casa/:casaID/lista/:listaID
